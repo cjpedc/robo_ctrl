@@ -1,4 +1,128 @@
 
+/*
+
+#include "ros/ros.h"
+#include <sstream>
+#include <iostream>
+#include <ras_arduino_msgs/PWM.h>
+#include <ras_arduino_msgs/Encoders.h>
+#include <geometry_msgs/Twist.h>
+#include <cmath>
+
+
+#define CF 10.0
+#define TPR 360.0
+
+static const double PI = acos(-1.0);
+
+
+class MotorControllerNode {
+
+private:
+	
+	const double wheel_radius;	//Radius of the vehicle wheels
+	const double base;	//Vehicle base
+	const double alpha1;	//Adaptation speed coefficient LW
+	const double alpha2;	//Adaptation speed coefficient RW
+	double desLinVel;	//Desired linear velocity
+	double desAngVel;	//Desired angular velocity
+	double desLWVel;	//Desired left wheel angular velocity
+	double desRWVel;	//Desired right wheel angular velocity
+	double pwm1;	//Current pwm1 signal strength
+	double pwm2;	//Current pwm2 signal strength
+	
+
+public:
+
+	ros::NodeHandle n_;
+	ros::Subscriber twist_subscriber_;
+	ros::Subscriber encoders_subscriber_;
+	ros::Publisher pwm_publisher_;
+	
+
+    MotorControllerNode() : wheel_radius(0.0352), base(0.23), alpha1(8.5), alpha2(10) {
+         std::cerr << "Does it work?" << std::endl;
+    }
+
+	~MotorControllerNode() {}
+
+	void init() {
+		desLinVel = 0.0;
+		desAngVel = 0.0;
+		twist_subscriber_ = n_.subscribe("/motor_controller/twist", 1, &MotorControllerNode::updateDesiredVelocity, this);
+        encoders_subscriber_ = n_.subscribe("/arduino/encoders", 1, &MotorControllerNode::adjustPWM, this);
+        pwm_publisher_ = n_.advertise<ras_arduino_msgs::PWM>("/arduino/pwm", 1);
+
+        ras_arduino_msgs::PWM pm;
+        pm.PWM1 = 0;
+        pm.PWM2 = 0;
+        pwm_publisher_.publish(pm);
+	}
+	
+	void updateDesiredVelocity(const geometry_msgs::Twist::ConstPtr &msg) {
+		
+		desLinVel = msg->linear.x;
+		desAngVel = msg->angular.z;
+		
+		desLWVel = (desLinVel-(base/2.0)*desAngVel)/wheel_radius;
+		desRWVel = (desLinVel+(base/2.0)*desAngVel)/wheel_radius;
+
+        std::cerr << "upd" << std::endl;
+		
+	}
+	
+	void adjustPWM(const ras_arduino_msgs::Encoders::ConstPtr &msg) {
+		
+        std::cerr << "adj" << std::endl;
+
+		double estLWVel = (msg->delta_encoder1*CF*2.0*PI)/TPR;
+		double estRWVel = (msg->delta_encoder2*CF*2.0*PI)/TPR;
+		
+		pwm1 += alpha1*(desLWVel-estLWVel);
+		pwm2 += alpha2*(desRWVel-estRWVel);
+		
+        std::cerr << "difference for left wheel is " << desLWVel << "-" << estLWVel << std::endl;
+        std::cerr << "difference for right wheel is " << desRWVel << "-" << estRWVel << std::endl;
+		
+		ras_arduino_msgs::PWM pm;
+		pm.PWM1 = (int)		pm.PWM2 = (int)pwm2;
+		pwm_publisher_.publish(pm);
+		
+		//std::cerr << "pm is:" << pm << std::endl;
+		
+	}
+
+};
+
+
+int mai
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
 #include "std_msgs/Int32.h"

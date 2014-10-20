@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
   geometry_msgs::Twist msg;
 
-  msg.linear.x = 0.2; // in [m/s]
+  msg.linear.x = .5; // in [m/s]
   msg.angular.z = 0; //
 
 
